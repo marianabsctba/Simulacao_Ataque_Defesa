@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ataque x Defesa: Operação Empresa Fantasma</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@700;900&display=swap');
+
+:root {
+  --bg: #080c10;
+  --bg2: #0d1117;
+  --bg3: #111820;
+  --panel: #0f1923;
+  --border: #1e3a4a;
+  --accent: #00e5ff;
+  --accent2: #ff3d6a;
+  --accent3: #39ff14;
+  --warn: #ffb300;
+  --text: #c9d8e8;
+  --text2: #6a8fa8;
+  --red: #ff3d6a;
+  --green: #39ff14;
+  --yellow: #ffb300;
+  --mono: 'Share Tech Mono', monospace;
+  --ui: 'Rajdhani', sans-serif;
+  --head: 'Orbitron', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ui);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,255,0.015) 2px, rgba(0,229,255,0.015) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,229,255,0.008) 80px, rgba(0,229,255,0.009) 81px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── SCREENS ─── */
+.screen { display: none; min-height: 100vh; position: relative; z-index: 1; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ─── INTRO SCREEN ─── */
+#screen-intro {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 100%, rgba(255,61,106,0.06) 0%, transparent 50%);
+}
+
+.intro-scanline {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: scanline 3s linear infinite;
+}
+@keyframes scanline { 0%{top:0} 100%{top:100%} }
+
+.logo-box {
+  margin-bottom: 2rem;
+  animation: fadeSlide 0.8s ease both;
+}
+@keyframes fadeSlide { from{opacity:0;transform:translateY(-30px)} to{opacity:1;transform:translateY(0)} }
+
+.logo-tag {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent2);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.logo-main {
+  font-family: var(--head);
+  font-size: clamp(1.8rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(0,229,255,0.5), 0 0 80px rgba(0,229,255,0.2);
+}
+
+.logo-main span { color: var(--accent); }
+.logo-sub {
+  font-family: var(--head);
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  color: var(--accent2);
+  letter-spacing: 3px;
+  margin-top: 0.3rem;
+}
+
+.intro-desc {
+  max-width: 640px;
+  font-size: 1rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  animation: fadeSlide 0.8s 0.3s ease both;
+}
+
+.intro-desc strong { color: var(--accent); }
+
+.role-cards {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeSlide 0.8s 0.5s ease both;
+}
+
+.role-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  max-width: 280px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.role-card.attacker::before { background: radial-gradient(ellipse at 50% 0%, rgba(255,61,106,0.15), transparent 70%); }
+.role-card.defender::before { background: radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.15), transparent 70%); }
+
+.role-card:hover { transform: translateY(-6px); }
+.role-card.attacker:hover { border-color: var(--accent2); box-shadow: 0 20px 60px rgba(255,61,106,0.2); }
+.role-card.defender:hover { border-color: var(--accent); box-shadow: 0 20px 60px rgba(0,229,255,0.2); }
+.role-card:hover::before { opacity: 1; }
+
+.role-icon { font-size: 3rem; margin-bottom: 1rem; }
+.role-title {
+  font-family: var(--head);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+.role-card.attacker .role-title { color: var(--accent2); }
+.role-card.defender .role-title { color: var(--accent); }
+.role-desc { font-size: 0.9rem; color: var(--text2); line-height: 1.5; }
+
+.intro-lore {
+  margin-top: 3rem;
+  max-width: 700px;
+  background: rgba(255,179,0,0.05);
+  border: 1px solid rgba(255,179,0,0.2);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--warn);
+  text-align: left;
+  animation: fadeSlide 0.8s 0.7s ease both;
+}
+
+/* ─── DIFFICULTY ─── */
+#screen-difficulty {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.diff-title {
+  font-family: var(--head);
+  font-size: 1.8rem;
+  color: var(--accent);
+  text-align: center;
+}
+
+.diff-cards {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.diff-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  cursor: pointer;
+  width: 200px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.diff-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.diff-card h3 { font-family: var(--head); margin-bottom: 0.5rem; font-size: 1rem; }
+.diff-card p { font-size: 0.8rem; color: var(--text2); }
+.diff-easy h3 { color: var(--green); }
+.diff-medium h3 { color: var(--warn); }
+.diff-hard h3 { color: var(--red); }
+
+/* ─── NAME INPUT ─── */
+#screen-name {
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+.name-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+.name-box h2 { font-family: var(--head); color: var(--accent); margin-bottom: 1rem; }
+.name-box input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.name-box input:focus { border-color: var(--accent); }
+
+/* ─── BTNs ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.8rem;
+  border-radius: 6px;
+  border: none;
+  font-family: var(--ui);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { box-shadow: 0 0 20px rgba(0,229,255,0.5); transform: scale(1.02); }
+.btn-danger { background: var(--accent2); color: #fff; }
+.btn-danger:hover { box-shadow: 0 0 20px rgba(255,61,106,0.5); }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+/* ─── STORY SCREEN ─── */
+#screen-story {
+  flex-direction: column;
+  padding: 0;
+}
+
+.story-header {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.story-logo {
+  font-family: var(--head);
+  font-size: 0.9rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+
+.story-phase-badge {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  background: rgba(0,229,255,0.1);
+  border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+  color: var(--accent);
+}
+
+.story-score {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--warn);
+}
+
+.story-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: calc(100vh - 60px);
+}
+
+@media(max-width:768px) {
+  .story-body { grid-template-columns: 1fr; }
+}
+
+/* ─── TERMINAL PANEL ─── */
+.terminal-panel {
+  background: #050810;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+}
+
+.terminal-title-bar {
+  background: #0a0f18;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #ffbd2e; }
+.dot-g { background: #28ca41; }
+.t-label { font-size: 0.75rem; color: var(--text2); margin-left: 0.5rem; }
+
+.terminal-output {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  max-height: 45vh;
+}
+
+.t-line { margin-bottom: 0.15rem; }
+.t-prompt { color: var(--accent2); }
+.t-cmd { color: var(--accent); }
+.t-out { color: #7ec8a0; }
+.t-err { color: var(--red); }
+.t-info { color: var(--text2); }
+.t-warn { color: var(--warn); }
+.t-success { color: var(--green); }
+.t-blink { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.terminal-actions {
+  border-top: 1px solid var(--border);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cmd-btn {
+  background: rgba(0,229,255,0.05);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+.cmd-btn:hover { background: rgba(0,229,255,0.1); border-color: var(--accent); }
+.cmd-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.cmd-btn.ran { color: var(--text2); border-color: rgba(255,255,255,0.1); background: transparent; }
+
+/* ─── SIEM PANEL ─── */
+.siem-panel {
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.siem-tabs {
+  display: flex;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.siem-tab {
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.siem-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.siem-tab:hover { color: var(--text); }
+
+.siem-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  max-height: 45vh;
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.4rem;
+  border-left: 3px solid transparent;
+  background: rgba(255,255,255,0.02);
+  font-size: 0.8rem;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.alert-item:hover { background: rgba(255,255,255,0.05); }
+.alert-item.critical { border-left-color: var(--red); }
+.alert-item.high { border-left-color: var(--warn); }
+.alert-item.medium { border-left-color: #7ec8a0; }
+.alert-item.low { border-left-color: var(--text2); }
+.alert-item.noise { border-left-color: rgba(255,255,255,0.1); opacity: 0.5; }
+
+.sev-badge {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.sev-critical { background: rgba(255,61,106,0.2); color: var(--red); }
+.sev-high { background: rgba(255,179,0,0.2); color: var(--warn); }
+.sev-medium { background: rgba(126,200,160,0.2); color: #7ec8a0; }
+.sev-low { background: rgba(106,143,168,0.2); color: var(--text2); }
+.sev-noise { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); }
+
+.log-line {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--text2);
+}
+.log-line .ts { color: rgba(0,229,255,0.5); }
+.log-line .host { color: var(--warn); }
+.log-line .evt { color: var(--text); }
+.log-line .detail { color: var(--text2); }
+
+/* ─── QUESTION PANEL ─── */
+.question-panel {
+  grid-column: 1 / -1;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 1.5rem;
+}
+
+.q-context {
+  background: rgba(0,229,255,0.03);
+  border: 1px solid rgba(0,229,255,0.1);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+.q-context strong { color: var(--accent); }
+
+.q-title {
+  font-family: var(--ui);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.q-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media(max-width:600px) { .q-options { grid-template-columns: 1fr; } }
+
+.q-opt {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text);
+  text-align: left;
+}
+.q-opt:hover { border-color: var(--accent); background: rgba(0,229,255,0.04); }
+.q-opt.selected { border-color: var(--accent); background: rgba(0,229,255,0.08); }
+.q-opt.correct { border-color: var(--green); background: rgba(57,255,20,0.08); color: var(--green); }
+.q-opt.wrong { border-color: var(--red); background: rgba(255,61,106,0.08); color: var(--red); }
+
+.q-feedback {
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  display: none;
+  margin-bottom: 1rem;
+}
+.q-feedback.show { display: block; }
+.q-feedback.pos { border-left: 3px solid var(--green); color: #7ec8a0; }
+.q-feedback.neg { border-left: 3px solid var(--red); color: #ff8a9b; }
+
+.q-actions { display: flex; gap: 1rem; align-items: center; }
+.q-score-mini { font-family: var(--mono); font-size: 0.85rem; color: var(--text2); margin-left: auto; }
+
+/* ─── KILL CHAIN ─── */
+.killchain {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+.kc-step {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  white-space: nowrap;
+  transition: all 0.3s;
+  font-family: var(--mono);
+}
+.kc-step.done { border-color: var(--red); color: var(--red); background: rgba(255,61,106,0.1); }
+.kc-step.active { border-color: var(--warn); color: var(--warn); background: rgba(255,179,0,0.1); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,179,0,0.3)} 50%{box-shadow:0 0 0 6px rgba(255,179,0,0)} }
+
+/* ─── MITRE PANEL ─── */
+.mitre-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.4rem;
+}
+.mitre-cell {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.7rem;
+}
+.mitre-cell .mitre-id { font-family: var(--mono); color: var(--accent2); font-size: 0.65rem; }
+.mitre-cell .mitre-name { color: var(--text); font-weight: 600; margin-top: 0.1rem; }
+.mitre-cell.hit { border-color: rgba(255,61,106,0.5); background: rgba(255,61,106,0.08); }
+
+/* ─── RESULT SCREEN ─── */
+#screen-result {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.result-box {
+  max-width: 700px;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.5rem;
+}
+
+.result-grade {
+  font-family: var(--head);
+  font-size: 5rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.result-title {
+  font-family: var(--head);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.stat-item { background: var(--bg2); border-radius: 8px; padding: 1rem; }
+.stat-num { font-family: var(--head); font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.8rem; color: var(--text2); margin-top: 0.25rem; }
+
+.incident-report {
+  text-align: left;
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 1.2rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  margin: 1.5rem 0;
+  color: var(--text2);
+  max-height: 250px;
+  overflow-y: auto;
+}
+.incident-report .ir-head { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; display: block; }
+.incident-report .ir-field { color: var(--warn); }
+
+/* ─── CERTIFICATE ─── */
+#screen-cert {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+#cert-canvas {
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  max-width: 100%;
+  box-shadow: 0 0 40px rgba(0,229,255,0.2);
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.5s ease;
+}
+
+.phase-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text2);
+  margin-bottom: 1rem;
+}
+
+.tooltip {
+  position: relative;
+  cursor: help;
+}
+.tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 100;
+}
+.tooltip:hover::after { opacity: 1; }
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  font-family: var(--mono);
+  color: var(--text2);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.checklist-item .ck { font-size: 1rem; }
+.checklist-item.done { color: var(--green); }
+.checklist-item.miss { color: var(--red); }
+
+.breadcrumb {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text2);
+  padding: 0.5rem 1.5rem;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+.breadcrumb span { color: var(--accent); }
+
+/* loading overlay */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(5,8,16,0.9);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: var(--mono);
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* hack easter egg */
+.glitch {
+  animation: glitch 0.3s steps(1) 3;
+}
+@keyframes glitch {
+  0%{filter:none} 25%{filter:hue-rotate(90deg) saturate(3)} 50%{filter:invert(0.05)} 75%{filter:hue-rotate(-90deg)} 100%{filter:none}
+}
+
+
+
+/* ─── RESPONSIVIDADE REFORÇADA / MOBILE-FIRST PATCH ─── */
+img, svg, canvas { max-width: 100%; height: auto; }
+button, input { min-height: 44px; }
+.terminal-panel, .siem-panel, .question-panel, .result-box, .name-box { min-width: 0; }
+.cmd-btn, .q-opt, .alert-item, .log-line, .incident-report, pre { overflow-wrap: anywhere; word-break: break-word; }
+.story-body > * { min-width: 0; }
+.siem-tabs { scrollbar-width: thin; }
+.q-actions { flex-wrap: wrap; }
+.q-score-mini { min-width: 180px; }
+#cert-canvas { width: min(900px, 100%); height: auto; display: block; }
+
+@media (max-width: 900px) {
+  .story-body { grid-template-columns: 1fr; min-height: auto; }
+  .terminal-panel { border-right: 0; border-bottom: 1px solid var(--border); }
+  .terminal-output, .siem-content { max-height: none; }
+  .terminal-output { min-height: 260px; max-height: 42vh; }
+  .siem-content { min-height: 260px; max-height: 42vh; }
+  .question-panel { padding: 1rem; }
+  .story-header { gap: .65rem; }
+  .story-score { margin-left: 0; }
+  .killchain { overflow-x: auto; flex-wrap: nowrap; padding-bottom: .9rem; }
+  .kc-step { flex: 0 0 auto; }
+}
+
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  #screen-intro, #screen-difficulty, #screen-name, #screen-result, #screen-cert { padding: 1rem; }
+  .logo-tag { font-size: .68rem; letter-spacing: 2px; }
+  .logo-main { font-size: clamp(1.75rem, 12vw, 2.45rem); }
+  .logo-sub { font-size: clamp(.95rem, 7vw, 1.15rem); letter-spacing: 1.5px; }
+  .intro-desc { font-size: .95rem; margin-bottom: 1.5rem; }
+  .role-cards, .diff-cards { gap: .85rem; width: 100%; }
+  .role-card, .diff-card { width: 100%; max-width: none; padding: 1.25rem; }
+  .intro-lore { font-size: .72rem; padding: .85rem; }
+  .name-box, .result-box { padding: 1.25rem; border-radius: 12px; }
+  .story-header { padding: .75rem; align-items: stretch; }
+  .story-header > div:last-child { width: 100%; justify-content: space-between; margin-left: 0 !important; }
+  .story-logo, .story-phase-badge { font-size: .72rem; }
+  .killchain { padding: .6rem .75rem; }
+  .terminal-title-bar { padding: .45rem .75rem; }
+  .terminal-output, .siem-content { padding: .75rem; font-size: .74rem; max-height: 38vh; }
+  .terminal-actions { padding: .75rem; max-height: 170px; overflow-y: auto; }
+  .cmd-btn { font-size: .72rem; padding: .6rem; }
+  .siem-tab { padding: .55rem .75rem; font-size: .74rem; }
+  .alert-item { display: grid; grid-template-columns: auto auto 1fr; gap: .45rem; font-size: .72rem; }
+  .q-context { font-size: .84rem; padding: .85rem; }
+  .q-title { font-size: .96rem; }
+  .q-options { grid-template-columns: 1fr; gap: .55rem; }
+  .q-opt { font-size: .84rem; padding: .78rem; }
+  .q-actions { gap: .6rem; }
+  .q-actions .btn, .q-score-mini { width: 100%; justify-content: center; text-align: center; margin-left: 0; }
+  .result-grade { font-size: 3.2rem; }
+  .result-stats { grid-template-columns: 1fr; }
+  .incident-report { max-height: 220px; font-size: .72rem; }
+}
+
+@media (max-width: 420px) {
+  .btn { width: 100%; justify-content: center; padding: .72rem 1rem; font-size: .9rem; }
+  .phase-label { font-size: .64rem; }
+  .terminal-output, .siem-content { max-height: 34vh; }
+  .alert-item { grid-template-columns: 1fr; }
+  .sev-badge { width: fit-content; }
+  #screen-cert h2 { font-size: 1rem; text-align: center; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div style="color:var(--accent);font-size:0.85rem;" id="loading-msg">Inicializando ambiente seguro...</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA INTRO
+═══════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-scanline"></div>
+  <div class="logo-box">
+    <div class="logo-tag">// Simulação de Incidente Corporativo</div>
+    <div class="logo-main">ATAQUE <span>×</span> DEFESA</div>
+    <div class="logo-sub">Operação: Empresa Fantasma</div>
+  </div>
+
+  <div class="intro-desc">
+    <strong>NexaFoods S.A.</strong> — 3.400 funcionários, 12 filiais, ambiente híbrido e uma equipe de TI que ainda acredita que senha forte é o nome do pet com exclamação no final.<br><br>
+    Escolha seu lado. Os dois lados têm suas razões. Só um vai dormir bem hoje.
+  </div>
+
+  <div class="role-cards">
+    <div class="role-card attacker" onclick="chooseRole('attacker')">
+      <div class="role-icon">💀</div>
+      <div class="role-title">ATACANTE</div>
+      <div class="role-desc">Siga a cadeia ofensiva simulada. Reconhecimento, acesso inicial, escalada e exfiltração — tudo em ambiente de laboratório controlado, com comandos fictícios e saídas sanitizadas.</div>
+    </div>
+    <div class="role-card defender" onclick="chooseRole('defender')">
+      <div class="role-icon">🛡️</div>
+      <div class="role-title">BLUE TEAM</div>
+      <div class="role-desc">Você é o SOC sobrecarregado que vai tentar detectar o que está acontecendo antes que o atacante mande o relatório de RH do CEO para um servidor em outro continente.</div>
+    </div>
+  </div>
+
+  <div class="intro-lore" style="margin-top:2rem;">
+    ⚠️ AVISO LEGAL DO SISTEMA<br>
+    Todos os comandos, CVEs e técnicas apresentados são <strong>simulados, fictícios e não executáveis</strong>.<br>
+    Nenhum sistema real foi comprometido. Nenhuma senha real foi exfiltrada.<br>
+    A empresa NexaFoods S.A. não existe. Infelizmente, os problemas dela existem em toda empresa real.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA DIFICULDADE
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-difficulty">
+  <div class="diff-title">Selecione a Dificuldade</div>
+  <p style="color:var(--text2);font-size:0.9rem;text-align:center;margin-bottom:1rem;">Quanto mais difícil, mais ruído, mais falsos positivos e menos misericórdia.</p>
+  <div class="diff-cards">
+    <div class="diff-card diff-easy" onclick="chooseDiff('easy')">
+      <h3>🟢 TRAINEE</h3>
+      <p>Pistas mais claras. Alertas mais precisos. Sem surpresas cruéis.<br><br>Pontuação máxima: 800 pts</p>
+    </div>
+    <div class="diff-card diff-medium" onclick="chooseDiff('medium')">
+      <h3>🟡 ANALISTA</h3>
+      <p>Falsos positivos moderados. Você vai questionar suas escolhas.<br><br>Pontuação máxima: 1200 pts</p>
+    </div>
+    <div class="diff-card diff-hard" onclick="chooseDiff('hard')">
+      <h3>🔴 THREAT HUNTER</h3>
+      <p>Ruído intenso. Penalidades severas. Correlação exigida.<br><br>Pontuação máxima: 2000 pts</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA NOME
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-name">
+  <div class="name-box">
+    <h2>IDENTIFICAÇÃO DO OPERADOR</h2>
+    <p style="color:var(--text2);font-size:0.85rem;margin-bottom:1.2rem;">Seu nome aparecerá no certificado final. Coloque como quiser — inclusive seu título imaginário.</p>
+    <input type="text" id="player-name" placeholder="Ex: Ana Santos, OSCP" maxlength="60" />
+    <button class="btn btn-primary" onclick="startGame()" style="width:100%">INICIAR OPERAÇÃO →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA PRINCIPAL DO JOGO
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-story">
+  <!-- Header -->
+  <div class="story-header">
+    <div class="story-logo" id="role-label">// MODO ATACANTE</div>
+    <div class="story-phase-badge" id="phase-badge">FASE 1/8</div>
+    <div style="display:flex;gap:0.5rem;align-items:center;margin-left:auto;">
+      <div class="story-score">⭐ <span id="score-display">0</span> pts</div>
+      <button class="btn btn-ghost" style="padding:0.4rem 0.8rem;font-size:0.75rem;" onclick="showScreen('screen-intro')">↩ Sair</button>
+    </div>
+  </div>
+
+  <!-- Kill Chain bar -->
+  <div class="killchain" id="killchain-bar">
+    <div class="kc-step" data-phase="0">Reconhecimento</div>
+    <div class="kc-step" data-phase="1">Enumeração</div>
+    <div class="kc-step" data-phase="2">Acesso Inicial</div>
+    <div class="kc-step" data-phase="3">Escalada de Priv.</div>
+    <div class="kc-step" data-phase="4">Mov. Lateral</div>
+    <div class="kc-step" data-phase="5">Persistência</div>
+    <div class="kc-step" data-phase="6">Exfiltração</div>
+    <div class="kc-step" data-phase="7">Anti-Forense</div>
+  </div>
+
+  <!-- Progress -->
+  <div style="padding:0.5rem 1rem;background:var(--panel);border-bottom:1px solid var(--border);">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="phase-label" id="phase-label-text">Fase 1 de 8 — Reconhecimento</div>
+  </div>
+
+  <!-- Main body: terminal + siem -->
+  <div class="story-body">
+
+    <!-- LEFT: Terminal (atacante) ou Log View (blue team) -->
+    <div class="terminal-panel" id="left-panel">
+      <div class="terminal-title-bar">
+        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+        <div class="t-label" id="terminal-label">nexalab@attack-vm:~$</div>
+      </div>
+      <div class="terminal-output" id="terminal-output">
+        <div class="t-line t-info">// Ambiente de laboratório inicializado</div>
+        <div class="t-line t-info">// Todos os comandos são simulados — nenhum sistema real é afetado</div>
+        <div class="t-line t-info">// Target: nexafake.local (ambiente fictício)</div>
+        <div class="t-line" style="color:rgba(255,255,255,0.2);">─────────────────────────────────────────</div>
+      </div>
+      <div class="terminal-actions" id="cmd-buttons">
+        <!-- Preenchido por JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT: SIEM -->
+    <div class="siem-panel" id="right-panel">
+      <div class="siem-tabs">
+        <div class="siem-tab active" onclick="switchTab('alerts',this)">🔔 Alertas</div>
+        <div class="siem-tab" onclick="switchTab('logs',this)">📋 Logs</div>
+        <div class="siem-tab" onclick="switchTab('timeline',this)">⏱ Timeline</div>
+        <div class="siem-tab" onclick="switchTab('mitre',this)">🎯 MITRE</div>
+        <div class="siem-tab" onclick="switchTab('host',this)">🖥 Host</div>
+      </div>
+      <div class="siem-content" id="siem-alerts"><!-- Alerts --></div>
+      <div class="siem-content" id="siem-logs" style="display:none"><!-- Logs --></div>
+      <div class="siem-content" id="siem-timeline" style="display:none"><!-- Timeline --></div>
+      <div class="siem-content" id="siem-mitre" style="display:none"><!-- MITRE --></div>
+      <div class="siem-content" id="siem-host" style="display:none"><!-- Host --></div>
+    </div>
+
+    <!-- BOTTOM: Question -->
+    <div class="question-panel" id="question-panel">
+      <div class="q-context" id="q-context"></div>
+      <div class="q-title" id="q-title"></div>
+      <div class="q-options" id="q-options"></div>
+      <div class="q-feedback" id="q-feedback"></div>
+      <div class="q-actions">
+        <button class="btn btn-primary" id="btn-next" onclick="nextPhase()" disabled>Próxima Fase →</button>
+        <button class="btn btn-ghost" id="btn-evidence" onclick="showEvidences()">🔍 Ver Evidências</button>
+        <div class="q-score-mini" id="penalty-label"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA RESULTADO
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-result">
+  <div class="result-box">
+    <div class="result-grade" id="result-grade">A</div>
+    <div class="result-title" id="result-title">Operação Concluída</div>
+    <p id="result-desc" style="color:var(--text2);margin-bottom:1rem;"></p>
+
+    <div class="result-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="stat-score">0</div>
+        <div class="stat-label">Pontuação Final</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-correct">0/8</div>
+        <div class="stat-label">Acertos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-penalty">0</div>
+        <div class="stat-label">Penalidades</div>
+      </div>
+    </div>
+
+    <div class="incident-report" id="incident-report">
+      <span class="ir-head">═══ RELATÓRIO DE INCIDENTE FINAL ═══</span>
+    </div>
+
+    <div id="checklist-final"></div>
+
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:1.5rem;">
+      <button class="btn btn-primary" onclick="showCertificate()">🎓 Gerar Certificado</button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-intro')">↩ Jogar Novamente</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA CERTIFICADO
+═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-cert">
+  <h2 style="font-family:var(--head);color:var(--accent);margin-bottom:1.5rem;">🎓 CERTIFICADO DE CONCLUSÃO</h2>
+  <canvas id="cert-canvas" width="900" height="620"></canvas>
+  <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;justify-content:center;">
+    <button class="btn btn-primary" onclick="downloadCert()">⬇ Download PNG</button>
+    <button class="btn btn-ghost" onclick="showScreen('screen-result')">↩ Voltar</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// OFUSCAÇÃO LEVE — chaves internas e validação
+// ═══════════════════════════════════════════════════
+const _K = 0x4E; // salt
+function _d(arr) { return arr.map(v => v ^ _K); }
+function _dc(arr) { return String.fromCharCode(..._d(arr)); }
+
+// Observação: em HTML estático não existe proteção criptográfica real.
+// A validação abaixo evita gabarito óbvio no DOM e no console, mas continua sendo apenas ofuscação educacional.
+
+// ═══════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════
+let G = {
+  role: 'attacker',
+  diff: 'medium',
+  name: '',
+  phase: 0,
+  score: 0,
+  penalties: 0,
+  correct: 0,
+  answered: false,
+  cmdRan: {},
+  phaseAnswered: [],
+  checklist: [],
+  maxPhases: 8,
+  diffMult: 1,
+};
+
+// ═══════════════════════════════════════════════════
+// FASES DO JOGO
+// ═══════════════════════════════════════════════════
+const PHASES = [
+  // 0 - Reconhecimento
+  {
+    title: "Fase 1 — Reconhecimento",
+    phase_name: "Reconhecimento",
+    terminal_cmds: [
+      {
+        label: "recon_sim --target nexafake.local --mode passive",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'recon_sim --target nexafake.local --mode passive'},
+          {t:'out', v:'[*] Iniciando reconhecimento passivo...'},
+          {t:'out', v:'[+] Registros DNS encontrados:'},
+          {t:'out', v:'    vpn.nexafake.local → 200.xx.xx.14 [Pulse Secure/VPN]'},
+          {t:'out', v:'    mail.nexafake.local → 200.xx.xx.22 [Exchange 2016]'},
+          {t:'out', v:'    intranet.nexafake.local → 10.0.1.5 [IIS/10.0]'},
+          {t:'out', v:'[+] Shodan simulado: VPN porta 443 acessível — banner "Pulse Connect Secure 9.0"'},
+          {t:'warn', v:'[!] CVE-FAKE-2026-0001 potencialmente aplicável (dry-run mode)'},
+          {t:'info', v:'[i] Nenhum sistema real foi enumerado. Dados fictícios.'},
+        ]
+      },
+      {
+        label: "osint_sim --company NexaFoods --linkedin --pastes",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'osint_sim --company NexaFoods --linkedin'},
+          {t:'out', v:'[+] Funcionários identificados via LinkedIn (simulado):'},
+          {t:'out', v:'    joao.silva@nexafoods.com — Gerente TI'},
+          {t:'out', v:'    marcia.ferreira@nexafoods.com — Analista Financeiro'},
+          {t:'out', v:'    ti.suporte@nexafoods.com — Helpdesk'},
+          {t:'out', v:'[+] Paste simulado encontrado (2024-08-11):'},
+          {t:'warn', v:'    ti.suporte@nexafoods.com : Nexafoods@2023 [REUTILIZAÇÃO DETECTADA]'},
+          {t:'info', v:'[i] Dados fictícios. Nenhum e-mail real foi consultado.'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'noise', text:'[FW] Bloqueio de scan de porta — IP externo aleatório (massa)', ts:'01:47'},
+      {sev:'low', text:'[DNS] Resolução externa nexafake.local consultada 3x por IP desconhecido', ts:'02:01'},
+      {sev:'noise', text:'[IDS] Assinatura genérica web scan — falso positivo habitual', ts:'02:05'},
+    ],
+    siem_logs: [
+      '[02:01] DNS srv01: query nexafake.local de 189.xxx.xxx.12 (externo)',
+      '[02:03] FW: DROP 189.xxx.xxx.12 → 200.xx.xx.14:443 (probe)',
+      '[02:05] IDS: sig=WEB_SCAN_GENERIC; classificação=ruído',
+    ],
+    timeline: [
+      {ts:'02:01', evt:'DNS recon externo', sev:'low'},
+      {ts:'02:05', evt:'Probe HTTP/S genérico', sev:'noise'},
+    ],
+    mitre_hits: ['T1590','T1589'],
+    host_info: 'VPN Gateway: vpn.nexafake.local\nOS: N/A (externo)\nStatus: Sem alerta crítico',
+    context: `Você recebe os seguintes eventos durante o plantão da madrugada:\n\n• <strong>02:01</strong> — Servidor DNS registra resolução de domínio corporativo por IP externo desconhecido (189.xxx.xxx.12)\n• <strong>02:05</strong> — IDS dispara assinatura genérica de "web scan" — evento comum, classificado automaticamente como ruído\n• <strong>02:07</strong> — Shodan detectou banner público do VPN gateway corporativo (Pulse Secure 9.0)\n\nNenhum login ocorreu ainda. Nenhum alerta crítico.`,
+    question: "Qual é a ação mais adequada para o SOC neste momento?",
+    options: [
+      {id:'nx7', text:'Correlacionar o IP externo com feeds de threat intel e verificar se há CVEs conhecidos para a versão do VPN exposta publicamente, adicionando o IP à watchlist.'},
+      {id:'A', text:'Bloquear imediatamente o IP externo no firewall e escalar para gestão como incidente crítico — qualquer reconhecimento deve ser tratado como ataque confirmado.'},
+      {id:'B', text:'Ignorar os eventos. Scans externos são normais em qualquer empresa exposta à internet e o IDS já classificou como ruído.'},
+      {id:'D', text:'Desligar o VPN gateway preventivamente até que a equipe de segurança avalie o banner exposto — disponibilidade é menos importante que segurança.'},
+    ],
+    feedback_pos: `Correto. Reconhecimento passivo raramente gera alertas definitivos — é o contexto acumulado que importa. Correlacionar o IP com threat intel e monitorar o CVE aplicável é a abordagem madura: você registra a ameaça sem criar pânico desnecessário e sem cegar o ambiente.`,
+    feedback_neg: `Reconhecimento passivo não é, por si só, um incidente. Bloquear precipitadamente ou ignorar completamente são os dois extremos que colocam você em risco. A ação correta é monitorar, correlacionar e ficar pronto — não atirar no escuro.`,
+    checklist_item: 'Identificação de reconhecimento externo e correlação com CVE do VPN',
+    points: 150,
+    penalty: 50,
+  },
+  // 1 - Enumeração
+  {
+    title: "Fase 2 — Enumeração",
+    phase_name: "Enumeração",
+    terminal_cmds: [
+      {
+        label: "enum_lab --service vpn --version-check",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'enum_lab --service vpn --version-check'},
+          {t:'out', v:'[*] Verificando versão VPN...'},
+          {t:'out', v:'[+] Pulse Secure 9.0.x — AFETADA por CVE-FAKE-2026-0001'},
+          {t:'out', v:'[+] Endpoint /dana-na/auth/url_default/welcome.cgi acessível'},
+          {t:'out', v:'[+] Formulário de autenticação identificado — sem MFA detectado'},
+          {t:'warn', v:'[!] Credencial de pasta simulada: ti.suporte / Nexafoods@2023'},
+          {t:'info', v:'[i] DRY-RUN: nenhuma autenticação real foi realizada'},
+        ]
+      },
+      {
+        label: "credential_check --mode lab-only --wordlist paste_sim.txt",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'credential_check --mode lab-only'},
+          {t:'out', v:'[*] Testando credenciais do paste simulado (lab-only)...'},
+          {t:'out', v:'    [--] admin@nexafoods.com : Admin@2022 → FAIL'},
+          {t:'out', v:'    [--] marcia.ferreira : Ferreira123 → FAIL'},
+          {t:'out', v:'    [++] ti.suporte@nexafoods.com : Nexafoods@2023 → SIMULADO OK'},
+          {t:'success', v:'[✓] Credencial válida identificada (dry-run — sem conexão real)'},
+          {t:'warn', v:'[!] Sem MFA. Conta de suporte com privilégios de VPN.'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'medium', text:'[VPN] 3 tentativas de login falhas — ti.suporte — 02:11 a 02:13', ts:'02:13'},
+      {sev:'high', text:'[AD] Conta ti.suporte: bloqueio temporário de senha (3 falhas em 60s)', ts:'02:13'},
+      {sev:'noise', text:'[FW] Múltiplos IPs externos sondando porta 443 — padrão normal de noise', ts:'02:14'},
+      {sev:'critical', text:'[VPN] LOGIN BEM-SUCEDIDO — ti.suporte — IP: 189.xxx.xxx.12 — 02:14', ts:'02:14'},
+    ],
+    siem_logs: [
+      '[02:11] VPN: auth_fail user=ti.suporte src=189.xxx.xxx.12',
+      '[02:12] VPN: auth_fail user=ti.suporte src=189.xxx.xxx.12',
+      '[02:13] VPN: auth_fail user=ti.suporte src=189.xxx.xxx.12',
+      '[02:13] AD: acc_lockout user=ti.suporte (3 falhas)',
+      '[02:14] VPN: auth_success user=ti.suporte src=189.xxx.xxx.12 — sessão iniciada',
+      '[02:14] AD: acc_unlock AUTOMÁTICO (política de unlock=1min configurada)',
+    ],
+    timeline: [
+      {ts:'02:11', evt:'3 falhas VPN — ti.suporte', sev:'medium'},
+      {ts:'02:13', evt:'Bloqueio AD automático', sev:'high'},
+      {ts:'02:14', evt:'Unlock automático + Login bem-sucedido', sev:'critical'},
+    ],
+    mitre_hits: ['T1078','T1110'],
+    host_info: 'VPN Gateway\nUsuário: ti.suporte\nÚltimo login legítimo: 3 dias atrás (09:22, IP corporativo)\nIP atual: 189.xxx.xxx.12 (residencial - não reconhecido)',
+    context: `Sequência de eventos em <strong>2 minutos e 14 segundos</strong>:\n\n• <strong>02:11–02:13</strong> — 3 falhas de autenticação VPN para usuário <code>ti.suporte</code>, mesmo IP externo\n• <strong>02:13</strong> — Conta bloqueada automaticamente pelo AD\n• <strong>02:14</strong> — <strong>Login VPN bem-sucedido</strong> do mesmo IP (unlock automático configurado para 1 minuto)\n• IP de origem: residencial, não reconhecido, diferente de todos os logins históricos\n• Sem MFA configurado para essa conta`,
+    question: "Qual hipótese explica melhor o padrão observado?",
+    options: [
+      {id:'A', text:'O funcionário de suporte esqueceu a senha, tentou várias vezes, foi bloqueado, esperou 1 minuto e conseguiu logar. Acontece toda semana.'},
+      {id:'r4k', text:'Credential stuffing com senha vazada em paste público: o atacante tinha a senha correta, errou o formato 3x (case sensitive?), conta desbloqueou automaticamente e o login funcionou na 4ª tentativa.'},
+      {id:'B', text:'O bloqueio automático e o desbloqueio em 1 minuto indica que a política de AD está mal configurada, mas o login em si pode ser legítimo — funcionários trabalham de casa às 02h.'},
+      {id:'D', text:'O IDS já sinalizou noise no firewall no mesmo horário, o que indica que esse padrão de login faz parte de uma campanha de scan genérica e não é direcionado.'},
+    ],
+    feedback_pos: `Preciso. A sequência clássica de credential stuffing com senha correta: testa variações, toma o bloqueio, aguarda unlock automático e entra. O IP residencial sem histórico + horário de madrugada + senha presente em paste = hipótese prioritária. Bloqueio imediato da sessão e reset forçado são as próximas ações.`,
+    feedback_neg: `Funcionário trabalhando às 2h da manhã de IP residencial desconhecido, precedido por 3 falhas, imediatamente após o unlock automático? Essa coincidência não precisa de investigação longa — precisa de contenção imediata e análise posterior.`,
+    checklist_item: 'Detecção de credential stuffing com credencial de paste e login pós-unlock',
+    points: 200,
+    penalty: 75,
+  },
+  // 2 - Acesso Inicial
+  {
+    title: "Fase 3 — Acesso Inicial",
+    phase_name: "Acesso Inicial",
+    terminal_cmds: [
+      {
+        label: "exploit_sim --cve FAKE-2026-0001 --target vpn.nexafake.local --dry-run",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'exploit_sim --cve FAKE-2026-0001 --dry-run'},
+          {t:'out', v:'[*] Verificando exploitability (DRY-RUN)...'},
+          {t:'out', v:'[+] Versão vulnerável confirmada (simulado)'},
+          {t:'out', v:'[+] Path traversal simulado: /dana-na/../../etc/passwd → 200 OK (fictício)'},
+          {t:'warn', v:'[!] Sem payload real — modo demonstrativo'},
+          {t:'out', v:'[+] Sessão VPN autenticada via credencial + exploração auxiliar (simulado)'},
+          {t:'out', v:'[+] IP interno atribuído: 10.0.5.200 (lab)'},
+          {t:'success', v:'[✓] Acesso à rede interna obtido — modo simulado ativo'},
+        ]
+      },
+      {
+        label: "net_scan_sim --range 10.0.0.0/24 --lab-mode",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'net_scan_sim --range 10.0.0.0/24 --lab-mode'},
+          {t:'out', v:'[*] Scan interno (simulado)...'},
+          {t:'out', v:'    10.0.1.1  — DC01.nexafake.local [AD Domain Controller]'},
+          {t:'out', v:'    10.0.1.5  — WEB01.nexafake.local [IIS 10.0 + ASP.NET]'},
+          {t:'out', v:'    10.0.1.10 — FILE01.nexafake.local [SMB, porta 445]'},
+          {t:'out', v:'    10.0.2.20 — SRV-FIN-02 [Windows Server 2019 — Financeiro]'},
+          {t:'out', v:'    10.0.3.50 — LINUX-BI-01 [Ubuntu 22.04 — Servidor BI]'},
+          {t:'warn', v:'[!] SMB sem assinatura em FILE01 e SRV-FIN-02 (lab-only)'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'critical', text:'[EDR] WEB01: cmd.exe filho de w3wp.exe — execução anômala detectada — 02:19', ts:'02:19'},
+      {sev:'high', text:'[SYSMON] WEB01: criação de processo cmd.exe (PID 4821) — pai: w3wp.exe', ts:'02:19'},
+      {sev:'high', text:'[FW] Tráfego interno: 10.0.5.200 → 10.0.0.0/24 scan ICMP+TCP — 02:21', ts:'02:21'},
+      {sev:'noise', text:'[PROXY] Usuário ti.suporte acessa Sharepoint — comportamento esperado', ts:'02:22'},
+      {sev:'medium', text:'[DNS] Múltiplas consultas DNS internas por 10.0.5.200 em 30s', ts:'02:23'},
+    ],
+    siem_logs: [
+      '[02:19] Sysmon EID 1: img=cmd.exe parent=w3wp.exe user=IIS APPPOOL\\DefaultAppPool',
+      '[02:19] EDR: ALERT process_injection_candidate host=WEB01',
+      '[02:21] FW: ALLOW 10.0.5.200 → 10.0.1.1:445 (SMB)',
+      '[02:21] FW: ALLOW 10.0.5.200 → 10.0.1.10:445 (SMB)',
+      '[02:22] PROXY: ti.suporte → sharepoint.nexafake.local 200 OK',
+      '[02:23] DNS: 10.0.5.200 queries: dc01.nexafake.local, file01.nexafake.local, srv-fin-02.nexafake.local',
+    ],
+    timeline: [
+      {ts:'02:14', evt:'Login VPN ti.suporte', sev:'critical'},
+      {ts:'02:19', evt:'cmd.exe filho de w3wp.exe no WEB01', sev:'critical'},
+      {ts:'02:21', evt:'Scan interno a partir de 10.0.5.200', sev:'high'},
+      {ts:'02:23', evt:'DNS sweep interno', sev:'medium'},
+    ],
+    mitre_hits: ['T1190','T1059','T1046'],
+    host_info: 'WEB01.nexafake.local\nOS: Windows Server 2016\nIIS: 10.0 / ASP.NET 4.7\nEDR: ATIVO\nÚltima atualização de patch: 247 dias atrás\nAnomalia: processo cmd.exe originado de w3wp.exe',
+    context: `Você correlaciona dois eventos independentes:\n\n• <strong>02:19</strong> — EDR alerta: <code>cmd.exe</code> executado como filho de <code>w3wp.exe</code> no servidor WEB01\n• <strong>02:21</strong> — Firewall interno registra scan ICMP+TCP originado de <strong>10.0.5.200</strong> (IP atribuído ao túnel VPN de ti.suporte)\n• O usuário <strong>ti.suporte</strong> acessa SharePoint normalmente ao mesmo tempo (proxy log 02:22)\n• WEB01 não recebeu patches há 247 dias`,
+    question: "Como você interpreta a correlação entre esses eventos?",
+    options: [
+      {id:'B', text:'O scan interno é parte de uma ferramenta de monitoramento legítima rodando no IP do VPN. O cmd.exe filho de w3wp é suspeito mas pode ser uma aplicação web mal escrita.'},
+      {id:'A', text:'São dois incidentes independentes: um funcionário fazendo scan interno não autorizado e um servidor web com bug de aplicação. Devem ser investigados separadamente.'},
+      {id:'v9p', text:'O atacante usa a sessão VPN de ti.suporte como pivô enquanto simultaneamente explora o servidor web vulnerável — dois vetores paralelos que convergem para o mesmo ambiente.'},
+      {id:'D', text:'O acesso ao SharePoint pelo proxy confirma que ti.suporte está legítimo no sistema; o cmd.exe filho de w3wp é uma anomalia de aplicação, não relacionada ao login VPN.'},
+    ],
+    feedback_pos: `Exato. Dois vetores paralelos é um padrão de atacantes experientes: enquanto a sessão VPN serve como canal de comunicação, a exploração web fornece execução de código no servidor. O fato de ti.suporte acessar SharePoint não descarta o comprometimento — sessão VPN roubada pode ser usada independentemente.`,
+    feedback_neg: `A simultaneidade não é coincidência — é estratégia. Dois eventos anômalos diferentes no mesmo intervalo de minutos, com o mesmo IP VPN suspeito e um servidor web sem patches há 247 dias. Investigar "separadamente" aqui significa deixar o atacante trabalhar enquanto você sorteia tickets.`,
+    checklist_item: 'Correlação acesso VPN + exploração web + scan interno como vetor unificado',
+    points: 200,
+    penalty: 75,
+  },
+  // 3 - Escalada de Privilégio
+  {
+    title: "Fase 4 — Escalada de Privilégio",
+    phase_name: "Escalada de Privilégio",
+    terminal_cmds: [
+      {
+        label: "privesc_sim --host WEB01 --technique token-impersonation",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'privesc_sim --host WEB01 --technique token-impersonation'},
+          {t:'out', v:'[*] Verificando tokens disponíveis (simulado)...'},
+          {t:'out', v:'    IIS APPPOOL\\DefaultAppPool — SeImpersonatePrivilege: ENABLED'},
+          {t:'warn', v:'[!] Rotten/Juicy Potato aplicável (simulado) — DCOM disponível'},
+          {t:'out', v:'[+] Token SYSTEM simulado obtido via impersonation (dry-run)'},
+          {t:'success', v:'[✓] SYSTEM privileges — WEB01 (simulado)'},
+          {t:'info', v:'[i] Nenhum processo real foi injetado.'},
+        ]
+      },
+      {
+        label: "dump_sim --target lsass --mode mimikatz-placeholder --lab",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'dump_sim --target lsass --lab'},
+          {t:'out', v:'[*] Simulando extração de credenciais (dry-run)...'},
+          {t:'out', v:'[+] Hash simulado encontrado no processo lsass (fictício):'},
+          {t:'out', v:'    Administrator : NTLM_HASH_FICTICIO_A3F9...'},
+          {t:'out', v:'    svc_backup : NTLM_HASH_FICTICIO_B7C2...'},
+          {t:'warn', v:'[!] Conta svc_backup com privilégios de domínio (simulado)'},
+          {t:'info', v:'[i] Dados completamente fictícios — nenhum hash real.'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'critical', text:'[EDR] WEB01: tentativa de acesso a LSASS (PID 880) por processo não assinado', ts:'02:31'},
+      {sev:'critical', text:'[SYSMON] EID 10: lsass.exe acessado por dumper_placeholder.exe', ts:'02:31'},
+      {sev:'high', text:'[AD] Conta svc_backup: autenticação Kerberos de WEB01 — fora do padrão', ts:'02:33'},
+      {sev:'noise', text:'[AV] Detecção EICAR de teste — endpoint WKST-MKT-07 (falso positivo esperado)', ts:'02:34'},
+      {sev:'high', text:'[SYSMON] EID 4688: whoami.exe, ipconfig.exe, net.exe executados — WEB01', ts:'02:35'},
+    ],
+    siem_logs: [
+      '[02:31] EDR: lsass_access_attempt process=unknown.exe pid=5532 target=lsass.exe',
+      '[02:31] Sysmon EID10: SourceImage=C:\\Temp\\run.exe TargetImage=lsass.exe',
+      '[02:33] AD: Kerberos TGS Request — SPN svc_backup — from WEB01$',
+      '[02:34] AV: detect EICAR WKST-MKT-07 (teste rotineiro)',
+      '[02:35] Sysmon EID4688: net.exe /domain; whoami /priv; ipconfig /all — WEB01',
+    ],
+    timeline: [
+      {ts:'02:19', evt:'Execução via web shell (cmd.exe filho de w3wp)', sev:'critical'},
+      {ts:'02:31', evt:'Acesso LSASS — dump de credencial simulado', sev:'critical'},
+      {ts:'02:33', evt:'svc_backup autentica via Kerberos a partir de WEB01', sev:'high'},
+      {ts:'02:35', evt:'Comandos de descoberta: whoami, net, ipconfig', sev:'high'},
+    ],
+    mitre_hits: ['T1003','T1134','T1087'],
+    host_info: 'WEB01.nexafake.local\nAnomalia CRÍTICA: acesso a LSASS por processo não assinado\nsvc_backup: conta de serviço com privs de Domain Admin (misconfiguration)\nTGS emitido para WEB01 às 02:33',
+    context: `Sequência em WEB01 após o acesso inicial:\n\n• <strong>02:31</strong> — EDR alerta sobre processo não assinado acessando <code>lsass.exe</code>\n• <strong>02:33</strong> — Conta <code>svc_backup</code> requisita ticket Kerberos originado de WEB01 (conta normalmente não autentica de servidores web)\n• <strong>02:35</strong> — Comandos <code>whoami /priv</code>, <code>net /domain</code>, <code>ipconfig</code> executados em sequência\n• <strong>02:34</strong> — AV detecta arquivo EICAR em WKST-MKT-07 (estação de marketing — incidente separado)`,
+    question: "Qual deve ser a prioridade imediata do SOC?",
+    options: [
+      {id:'D', text:'Isolar o WKST-MKT-07 como prioridade — detecção de AV em endpoint representa risco de ransomware e deve ser tratada primeiro por impacto potencial maior.'},
+      {id:'A', text:'Aguardar mais evidências antes de agir — o acesso a LSASS pode ser de um software legítimo de backup e a conta svc_backup pode estar funcionando normalmente.'},
+      {id:'B', text:'Resetar a senha de ti.suporte imediatamente e encerrar a sessão VPN — isso interrompe o ataque na origem sem precisar isolar servidores.'},
+      {id:'m2q', text:'Isolar WEB01 da rede imediatamente, desabilitar a conta svc_backup e iniciar análise forense — o atacante provavelmente já tem credenciais de domínio.'},
+    ],
+    feedback_pos: `Correto. Dump de LSASS + uso imediato de conta de serviço com privs de Domain Admin = o atacante provavelmente já tem credenciais que funcionam em todo o domínio. Isolar WEB01, desabilitar svc_backup e iniciar forense é contenção real. O EICAR em marketing é incidente separado com prioridade menor.`,
+    feedback_neg: `Quando um processo não assinado acessa LSASS seguido de uso imediato de uma conta de serviço privilegiada, o atacante já tem o que precisava. Resetar só a VPN não resolve — as credenciais de domínio já foram extraídas (simulado). O WKST-MKT-07 com EICAR é provável falso positivo ou incidente menor.`,
+    checklist_item: 'Identificação de dump LSASS e uso de svc_backup como indicador de credenciais comprometidas',
+    points: 250,
+    penalty: 100,
+  },
+  // 4 - Movimento Lateral
+  {
+    title: "Fase 5 — Movimento Lateral",
+    phase_name: "Movimento Lateral",
+    terminal_cmds: [
+      {
+        label: "lateral_move_sim --host SRV-FIN-02 --method pass-the-hash-sim",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'lateral_move_sim --host SRV-FIN-02'},
+          {t:'out', v:'[*] Movimento lateral simulado para SRV-FIN-02...'},
+          {t:'out', v:'[+] Hash simulado de svc_backup usado via PTH (fictício)'},
+          {t:'out', v:'[+] Autenticação NTLM simulada aceita — SRV-FIN-02'},
+          {t:'out', v:'[+] WMI exec simulado: cmd.exe /c dir C:\\Financeiro\\'},
+          {t:'out', v:'    >> planilha_dre_q3.xlsx (2.1 MB)'},
+          {t:'out', v:'    >> relatorio_fornecedores_2024.xlsx (4.8 MB)'},
+          {t:'out', v:'    >> base_clientes_export.csv (18.2 MB) ← ALVO'},
+          {t:'warn', v:'[!] Dados identificados — exfiltração será simulada na próxima fase'},
+        ]
+      },
+      {
+        label: "lateral_move_sim --host LINUX-BI-01 --method ssh-key-reuse-sim",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'lateral_move_sim --host LINUX-BI-01'},
+          {t:'out', v:'[*] Verificando reutilização de chave SSH (simulado)...'},
+          {t:'out', v:'[+] Chave SSH encontrada em WEB01 (deploy key compartilhada — simulado)'},
+          {t:'out', v:'[+] SSH simulado: deploy@LINUX-BI-01 aceito'},
+          {t:'out', v:'[+] Acesso ao servidor de BI obtido (simulado)'},
+          {t:'warn', v:'[!] Dados de relatórios analíticos acessíveis (fictício)'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'critical', text:'[AD] Pass-the-Hash detectado: autenticação NTLM de WEB01$ → SRV-FIN-02 com hash svc_backup', ts:'02:44'},
+      {sev:'high', text:'[SYSMON] WMI exec em SRV-FIN-02: cmd.exe → dir C:\\Financeiro\\', ts:'02:45'},
+      {sev:'high', text:'[EDR] SRV-FIN-02: sem EDR instalado — detecção limitada', ts:'02:45'},
+      {sev:'medium', text:'[SSH] LINUX-BI-01: login deploy@ — chave aceita — horário incomum', ts:'02:47'},
+      {sev:'noise', text:'[BACKUP] Erro de backup rotineiro FILE01 — timeout de 30s (esperado)', ts:'02:48'},
+    ],
+    siem_logs: [
+      '[02:44] AD: NTLM auth SRV-FIN-02 ← WEB01$ — account=svc_backup — type3_logon',
+      '[02:45] Sysmon: WMI CreateProcess cmd.exe /c "dir C:\\Financeiro" — SRV-FIN-02',
+      '[02:45] EDR: SRV-FIN-02 — agent_status=NOT_INSTALLED',
+      '[02:47] SSH: accepted publickey deploy@LINUX-BI-01 from 10.0.1.5 (WEB01)',
+      '[02:48] BACKUP: FILE01 backup_job timeout — non_critical',
+    ],
+    timeline: [
+      {ts:'02:31', evt:'Dump LSASS WEB01', sev:'critical'},
+      {ts:'02:44', evt:'PTH WEB01 → SRV-FIN-02 (svc_backup)', sev:'critical'},
+      {ts:'02:45', evt:'WMI exec em SRV-FIN-02 — sem EDR', sev:'high'},
+      {ts:'02:47', evt:'SSH LINUX-BI-01 via chave de deploy', sev:'high'},
+    ],
+    mitre_hits: ['T1550','T1047','T1021'],
+    host_info: 'SRV-FIN-02.nexafake.local\nOS: Windows Server 2019\nEDR: NÃO INSTALADO\nÚltimo acesso legítimo svc_backup: nunca (conta de serviço de backup — não deveria autenticar interativamente)',
+    context: `Análise de movimento lateral às 02:44–02:47:\n\n• <strong>02:44</strong> — AD detecta autenticação NTLM de WEB01 para SRV-FIN-02 usando hash de <code>svc_backup</code> (Pass-the-Hash)\n• <strong>02:45</strong> — WMI executa <code>dir C:\\Financeiro\\</code> em SRV-FIN-02 — servidor <strong>sem EDR instalado</strong>\n• <strong>02:47</strong> — Login SSH em LINUX-BI-01 via chave de deploy compartilhada, originado de WEB01\n• <strong>02:48</strong> — Alerta de backup com timeout em FILE01\n\nO atacante agora tem acesso confirmado a pelo menos 3 sistemas. SRV-FIN-02 não tem EDR.`,
+    question: "Qual é o escopo correto de comprometimento e a contenção prioritária?",
+    options: [
+      {id:'A', text:'O comprometimento está limitado a WEB01 e SRV-FIN-02 — LINUX-BI-01 teve apenas um login SSH legítimo de uma deploy key e não deve ser incluído no escopo de incidente.'},
+      {id:'B', text:'Isolar apenas SRV-FIN-02 é suficiente pois é o servidor com dados financeiros. WEB01 e LINUX-BI-01 podem continuar operando enquanto o incidente é investigado.'},
+      {id:'D', text:'O erro de backup em FILE01 indica que o atacante já comprometeu o servidor de arquivos e está interferindo com operações — FILE01 deve ser a prioridade de contenção.'},
+      {id:'s8d', text:'WEB01, SRV-FIN-02 e LINUX-BI-01 estão comprometidos; svc_backup e a deploy key SSH devem ser revogados imediatamente; a ausência de EDR em SRV-FIN-02 expande o escopo desconhecido.'},
+    ],
+    feedback_pos: `Correto. O atacante pivotou para 3 sistemas usando dois vetores diferentes (PTH e SSH key reuse). A ausência de EDR em SRV-FIN-02 significa que não sabemos o que mais aconteceu lá. Revogar as credenciais de movimento e isolar os 3 hosts é a contenção mínima necessária. O erro de backup é ruído.`,
+    feedback_neg: `Login SSH via deploy key comprometida de um host comprometido às 2h da manhã não é movimento legítimo. O erro de backup é ruído — o atacante não precisa interferir com backups ainda. Contenção parcial aqui é como trancar a porta da frente enquanto o atacante já está no escritório.`,
+    checklist_item: 'Mapeamento de movimento lateral: WEB01 → SRV-FIN-02 (PTH) e → LINUX-BI-01 (SSH key)',
+    points: 250,
+    penalty: 100,
+  },
+  // 5 - Persistência
+  {
+    title: "Fase 6 — Persistência",
+    phase_name: "Persistência",
+    terminal_cmds: [
+      {
+        label: "persist_sim --host DC01 --method scheduled-task --lab",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'persist_sim --host DC01 --method scheduled-task'},
+          {t:'out', v:'[*] Criando mecanismo de persistência simulado...'},
+          {t:'out', v:'[+] Tarefa agendada criada (simulado):'},
+          {t:'out', v:'    Name: WindowsUpdateHelperSvc'},
+          {t:'out', v:'    Action: C:\\Windows\\Temp\\svc_helper.exe (payload fictício)'},
+          {t:'out', v:'    Trigger: Logon, repetição 5min'},
+          {t:'out', v:'    User: SYSTEM'},
+          {t:'warn', v:'[!] Nome projetado para confundir com Windows Update legítimo'},
+          {t:'info', v:'[i] Executável fictício — não existe, não executa.'},
+        ]
+      },
+      {
+        label: "persist_sim --host WEB01 --method webshell-sim",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'persist_sim --host WEB01 --method webshell-sim'},
+          {t:'out', v:'[*] Simulando implante de web shell (lab)...'},
+          {t:'out', v:'[+] Arquivo criado (simulado): C:\\inetpub\\wwwroot\\img\\thumbs.aspx'},
+          {t:'out', v:'    >> Disfarçado como thumbnail handler'},
+          {t:'out', v:'    >> Acesso: http://intranet.nexafake.local/img/thumbs.aspx?cmd=X'},
+          {t:'warn', v:'[!] Web shell sem autenticação — qualquer um na rede pode usar'},
+          {t:'info', v:'[i] Arquivo fictício — não existe, não é executável.'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'critical', text:'[SYSMON] DC01: nova tarefa agendada criada por usuário svc_backup — WindowsUpdateHelperSvc', ts:'03:02'},
+      {sev:'high', text:'[FIM] WEB01: novo arquivo criado em C:\\inetpub\\wwwroot\\img\\thumbs.aspx', ts:'03:04'},
+      {sev:'medium', text:'[AV] DC01: arquivo desconhecido C:\\Windows\\Temp\\svc_helper.exe — sem detecção de assinatura', ts:'03:02'},
+      {sev:'noise', text:'[AD] 47 logins de serviço rotineiros — relatório de fim de turno', ts:'03:05'},
+      {sev:'high', text:'[FIM] WEB01: modificação em web.config (permissões de execução alteradas)', ts:'03:06'},
+    ],
+    siem_logs: [
+      '[03:02] Sysmon EID 4698: task=WindowsUpdateHelperSvc creator=svc_backup action=C:\\Windows\\Temp\\svc_helper.exe',
+      '[03:02] AV: unknown_binary C:\\Windows\\Temp\\svc_helper.exe — no_sig_match',
+      '[03:04] FIM: new_file C:\\inetpub\\wwwroot\\img\\thumbs.aspx size=3.2KB',
+      '[03:05] AD: service_logon_batch — 47 eventos (relatório de rotina)',
+      '[03:06] FIM: config_change web.config — ScriptResourceHandler enabled',
+    ],
+    timeline: [
+      {ts:'02:44', evt:'PTH → SRV-FIN-02', sev:'critical'},
+      {ts:'03:02', evt:'Tarefa agendada "WindowsUpdateHelperSvc" no DC01', sev:'critical'},
+      {ts:'03:04', evt:'Web shell thumbs.aspx em WEB01', sev:'high'},
+      {ts:'03:06', evt:'Alteração de web.config WEB01', sev:'high'},
+    ],
+    mitre_hits: ['T1053','T1505','T1036'],
+    host_info: 'DC01.nexafake.local\nDomainController — CRÍTICO\nNova tarefa agendada por svc_backup (conta NÃO deveria ter acesso ao DC)\nArquivo não assinado em C:\\Windows\\Temp\\',
+    context: `Às 03:02–03:06, novos eventos críticos em dois hosts:\n\n• <strong>DC01</strong>: Tarefa agendada <code>WindowsUpdateHelperSvc</code> criada por <code>svc_backup</code> — nome mimetiza Windows Update. Executável não assinado em <code>C:\\Windows\\Temp\\</code>\n• <strong>WEB01</strong>: Novo arquivo <code>thumbs.aspx</code> criado em diretório web público. Alteração de <code>web.config</code> habilitando execução de script\n• <strong>AD</strong>: 47 logins de serviço rotineiros (relatório normal de fim de turno)\n\nO atacante está criando backdoors antes de exfiltrar.`,
+    question: "O nome 'WindowsUpdateHelperSvc' foi escolhido propositalmente. O que isso indica sobre o nível do atacante e qual é a resposta correta?",
+    options: [
+      {id:'B', text:'O nome similar ao Windows Update indica um script automático de um produto legítimo de gerenciamento — antes de agir, confirmar com a equipe de sysadmin se algum deploy foi feito.'},
+      {id:'D', text:'A tarefa agendada é preocupante mas o foco deve ser no thumbs.aspx — web shells são mais imediatamente exploráveis e devem ser removidos antes de qualquer outra ação.'},
+      {id:'A', text:'Os 47 logins de serviço em paralelo sugerem que o atacante já comprometeu múltiplas contas de serviço e está usando todas elas — o DC01 pode já estar em controle do atacante.'},
+      {id:'h6t', text:'Mascaramento de nome (T1036) indica atacante com conhecimento operacional — a tarefa no DC01 representa persistência de alto impacto; ambos os mecanismos devem ser removidos e o DC01 tratado como comprometido.'},
+    ],
+    feedback_pos: `Correto. Naming lure (T1036) é técnica deliberada de evasão — o atacante sabe que analistas verão a tarefa e espera que o nome familiar reduza a suspeita. svc_backup criando tarefa no DC01 é uma aberração de privilégio que não tem explicação legítima. DC01 como comprometido é a classificação correta.`,
+    feedback_neg: `"Confirmar com sysadmin" é a resposta certa para muitas situações — mas não quando uma conta de serviço de backup está criando tarefas no Domain Controller às 3h da manhã com executável não assinado. Aqui a velocidade de contenção supera a de confirmação.`,
+    checklist_item: 'Detecção de persistência: scheduled task mascarada no DC01 e web shell WEB01',
+    points: 250,
+    penalty: 100,
+  },
+  // 6 - Exfiltração
+  {
+    title: "Fase 7 — Exfiltração",
+    phase_name: "Exfiltração",
+    terminal_cmds: [
+      {
+        label: "exfil_sim --source SRV-FIN-02 --file dummy_base_clientes.csv --channel dns-tunnel-sim",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'exfil_sim --file dummy_base_clientes.csv --channel dns-tunnel-sim'},
+          {t:'out', v:'[*] Simulando exfiltração via DNS tunneling (fictício)...'},
+          {t:'out', v:'[+] Arquivo: dummy_base_clientes.csv (18.2 MB simulado)'},
+          {t:'out', v:'[+] Fragmentação em queries DNS TXT: AAAA.sim-domain-lab.xyz'},
+          {t:'out', v:'    Queries enviadas (simulado): 9.847'},
+          {t:'out', v:'    Tamanho por query: ~1.8KB (simulado)'},
+          {t:'out', v:'[+] Transferência completa (simulado): 2m 14s'},
+          {t:'warn', v:'[!] DNS tunneling gera volume anômalo de queries — detectável'},
+          {t:'info', v:'[i] Nenhum dado real foi transferido. Domínio simulado.'},
+        ]
+      },
+      {
+        label: "exfil_sim --source SRV-FIN-02 --file dummy_dre.xlsx --channel https-c2-sim",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'exfil_sim --file dummy_dre.xlsx --channel https-c2-sim'},
+          {t:'out', v:'[*] Simulando C2 HTTPS (fictício)...'},
+          {t:'out', v:'[+] Domínio C2 simulado: api-metrics-cdn.simlab.xyz (criado há 3 dias)'},
+          {t:'out', v:'[+] Certificado TLS válido (Let\'s Encrypt — detectável por age do domínio)'},
+          {t:'out', v:'[+] Transferência: 4.8 MB / 30s via POST chunked (simulado)'},
+          {t:'success', v:'[✓] Exfiltração HTTPS simulada completa'},
+          {t:'info', v:'[i] Dados fictícios. Domínio inexistente.'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'critical', text:'[DNS] SRV-FIN-02: 9.847 queries DNS em 2min para *.sim-domain-lab.xyz — ANOMALIA CRÍTICA', ts:'03:21'},
+      {sev:'critical', text:'[PROXY] SRV-FIN-02: POST 18MB → api-metrics-cdn.simlab.xyz (domínio com 3 dias)', ts:'03:24'},
+      {sev:'high', text:'[DLP] Transferência de arquivo grande detectada: planilhas + CSV saindo de SRV-FIN-02', ts:'03:23'},
+      {sev:'noise', text:'[PROXY] Múltiplos acessos ao Office 365 — usuários normais (manhã cedo EUA)', ts:'03:25'},
+      {sev:'high', text:'[FW] SRV-FIN-02 → externo:443 — domínio recém-criado — categoria: sem classificação', ts:'03:24'},
+    ],
+    siem_logs: [
+      '[03:21] DNS: SRV-FIN-02 → resolver → *.sim-domain-lab.xyz — count=9847 in 134s — ANOMALY',
+      '[03:23] DLP: large_file_transfer SRV-FIN-02 file_type=csv,xlsx destination=external',
+      '[03:24] PROXY: POST api-metrics-cdn.simlab.xyz size=18.2MB SRV-FIN-02 — domain_age=3days',
+      '[03:25] PROXY: O365 access — users={multiple} — normal_pattern',
+    ],
+    timeline: [
+      {ts:'03:02', evt:'Persistência no DC01', sev:'critical'},
+      {ts:'03:21', evt:'DNS tunneling 9847 queries (SRV-FIN-02)', sev:'critical'},
+      {ts:'03:24', evt:'HTTPS exfil 18MB → domínio de 3 dias', sev:'critical'},
+      {ts:'03:25', evt:'Acessos O365 normais de usuários', sev:'noise'},
+    ],
+    mitre_hits: ['T1048','T1071','T1567'],
+    host_info: 'SRV-FIN-02 — SEM EDR\nTransferência: base_clientes.csv (18.2MB) + planilha DRE\nDestino 1: sim-domain-lab.xyz (DNS tunnel — domínio registrado há 8 dias)\nDestino 2: api-metrics-cdn.simlab.xyz (HTTPS — domínio 3 dias)\nDLP: alerta ativo mas sem bloqueio automático configurado',
+    context: `Às 03:21–03:24, dois canais de exfiltração simultâneos:\n\n• <strong>Canal 1 (DNS)</strong>: SRV-FIN-02 gera 9.847 queries DNS em 134 segundos para domínio <code>*.sim-domain-lab.xyz</code> (registrado há 8 dias)\n• <strong>Canal 2 (HTTPS)</strong>: POST de 18.2MB para <code>api-metrics-cdn.simlab.xyz</code> (domínio com 3 dias, TLS válido)\n• DLP disparou alerta mas <strong>não está configurado para bloquear</strong>\n• SRV-FIN-02 continua sem EDR\n• Acessos O365 de usuários normais em paralelo (sem relação)`,
+    question: "A exfiltração já aconteceu. Qual é a sequência correta de ações agora?",
+    options: [
+      {id:'A', text:'Bloquear os domínios no firewall imediatamente e reiniciar SRV-FIN-02 — isso interrompe qualquer exfiltração em andamento e limpa o processo malicioso.'},
+      {id:'B', text:'Preservar a conectividade de SRV-FIN-02 para monitorar se o atacante tenta novos domínios — captura ativa de tráfego adicional pode revelar mais sobre a infraestrutura do atacante.'},
+      {id:'D', text:'Notificar o jurídico sobre o vazamento de dados de clientes como primeira ação — a obrigação de notificação de incidente de dados é mais urgente que a contenção técnica.'},
+      {id:'q3z', text:'Isolar SRV-FIN-02 da rede, preservar evidências (não reiniciar), bloquear os domínios no DNS/firewall, notificar gestão e jurídico em paralelo, e iniciar avaliação de impacto de dados para LGPD.'},
+    ],
+    feedback_pos: `Correto. A sequência importa: isolar sem reiniciar (preservar RAM com evidências), bloquear IOCs nos controles de rede, e notificar as partes corretas em paralelo — não em sequência. LGPD exige notificação à ANPD em até 72h para incidentes com dados pessoais. Reiniciar o servidor destrói evidências forenses valiosas.`,
+    feedback_neg: `Reiniciar limpa evidências de RAM. Monitorar ativo enquanto o atacante exfiltra mais dados é irresponsável. Notificar jurídico como PRIMEIRA ação antes de conter é inverter a prioridade — você não para um sangramento preenchendo formulário enquanto o paciente está na maca.`,
+    checklist_item: 'Identificação de exfiltração dual-channel (DNS tunnel + HTTPS C2) com impacto LGPD',
+    points: 300,
+    penalty: 125,
+  },
+  // 7 - Anti-Forense
+  {
+    title: "Fase 8 — Anti-Forense",
+    phase_name: "Anti-Forense",
+    terminal_cmds: [
+      {
+        label: "antiforensic_sim --target WEB01 --action clear-logs-sim",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'antiforensic_sim --target WEB01 --action clear-logs-sim'},
+          {t:'out', v:'[*] Simulando limpeza de rastros (lab-only)...'},
+          {t:'out', v:'[+] wevtutil cl System (simulado)'},
+          {t:'out', v:'[+] wevtutil cl Security (simulado)'},
+          {t:'out', v:'[+] wevtutil cl Application (simulado)'},
+          {t:'warn', v:'[!] Erro: SIEM já coletou logs em tempo real — limpeza local ineficaz'},
+          {t:'err', v:'[-] FALHOU: SIEM possui cópia centralizada. Logs locais dispensáveis.'},
+          {t:'info', v:'[i] Demonstração: atacante que limpa logs locais contra SIEM ativo perdeu a jogada'},
+        ]
+      },
+      {
+        label: "antiforensic_sim --target SRV-FIN-02 --action timestomp-sim --lab",
+        output: [
+          {t:'prompt', v:'attacker@lab:~$ '},{t:'cmd', v:'antiforensic_sim --target SRV-FIN-02 --action timestomp-sim'},
+          {t:'out', v:'[*] Simulando alteração de timestamp (lab-only)...'},
+          {t:'out', v:'[+] Timestamp de svc_helper.exe alterado para 2019-01-01 (simulado)'},
+          {t:'warn', v:'[!] Metadados NTFS preservados — $MFT revela timestamp real'},
+          {t:'warn', v:'[!] SIEM registrou criação original às 03:02'},
+          {t:'info', v:'[i] Timestomping pode enganar análise superficial, não forense profunda'},
+        ]
+      },
+    ],
+    siem_alerts: [
+      {sev:'critical', text:'[SIEM] WEB01: wevtutil.exe cl System + cl Security executados às 03:41 — LIMPEZA DE LOG', ts:'03:41'},
+      {sev:'critical', text:'[SIEM] Alerta: log local limpo — cópia SIEM preservada automaticamente', ts:'03:41'},
+      {sev:'high', text:'[FIM] SRV-FIN-02: metadados de arquivo modificados — possível timestomping', ts:'03:43'},
+      {sev:'medium', text:'[AD] DC01: conta svc_backup desabilitada — ação de contenção do SOC', ts:'03:45'},
+      {sev:'noise', text:'[BACKUP] Agendamento de backup noturno concluído — FILE01 ok', ts:'03:50'},
+    ],
+    siem_logs: [
+      '[03:41] Sysmon: wevtutil.exe cl System — WEB01 — CRITICAL',
+      '[03:41] Sysmon: wevtutil.exe cl Security — WEB01',
+      '[03:41] SIEM: log_clear_attempt detected — local_copy_destroyed — siem_copy_intact',
+      '[03:43] FIM: file_metadata_change svc_helper.exe timestamp=2019-01-01 (original=03:02)',
+      '[03:45] AD: account_disabled svc_backup — action=soc_response',
+    ],
+    timeline: [
+      {ts:'03:21', evt:'Exfiltração DNS/HTTPS', sev:'critical'},
+      {ts:'03:41', evt:'Limpeza de logs locais WEB01 (wevtutil)', sev:'critical'},
+      {ts:'03:43', evt:'Timestomping SRV-FIN-02', sev:'high'},
+      {ts:'03:45', evt:'SOC desabilita svc_backup (contenção)', sev:'medium'},
+    ],
+    mitre_hits: ['T1070','T1099','T1562'],
+    host_info: 'WEB01 + SRV-FIN-02\nLogs locais: LIMPOS pelo atacante\nSIEM: CÓPIA COMPLETA PRESERVADA (forwarding em tempo real)\nTimestamp alterado: detectável via $MFT NTFS\nStatus SOC: contenção parcial em andamento',
+    context: `Fase final do atacante às 03:41–03:43:\n\n• <strong>03:41</strong> — <code>wevtutil.exe cl System</code> e <code>cl Security</code> executados em WEB01 — tentativa de limpeza de log local\n• <strong>SIEM</strong> — logs já foram encaminhados em tempo real; cópia centralizada <strong>intacta</strong>\n• <strong>03:43</strong> — Timestamp de <code>svc_helper.exe</code> alterado para 2019-01-01 (timestomping)\n• <strong>03:45</strong> — SOC desabilita conta <code>svc_backup</code> (contenção em andamento)\n\nO atacante tentou apagar rastros mas o SIEM os preservou. A investigação forense pode prosseguir.`,
+    question: "O atacante limpou os logs locais. Qual afirmação sobre o impacto forense é correta?",
+    options: [
+      {id:'A', text:'A limpeza dos logs locais compromete irreversivelmente a investigação — sem os logs de evento do Windows no WEB01, a linha do tempo do ataque não pode ser reconstituída com confiança.'},
+      {id:'D', text:'O timestomping alterou permanentemente os metadados do arquivo — não é possível determinar quando svc_helper.exe foi realmente criado, prejudicando a prova forense.'},
+      {id:'B', text:'Como o SIEM coletou os logs em tempo real antes da limpeza, a evidência central está preservada. O timestomping é detectável via $MFT do NTFS. A investigação forense pode ser conduzida normalmente.'},
+      {id:'b5w', text:'A tentativa de limpeza de log é evidência de consciência do atacante sobre o SIEM — isso sugere um atacante sofisticado que provavelmente tem outros meios de persistência não detectados ainda.'},
+    ],
+    feedback_pos: `Correto. SIEM com forwarding em tempo real é exatamente para esse cenário. Logs locais limpos não comprometem a investigação quando há coleta centralizada. O timestomping é detectável porque o NTFS mantém o $MFT com timestamps $STANDARD_INFORMATION e $FILE_NAME independentes — e o SIEM também tem o evento original com timestamp real.`,
+    feedback_neg: `A opção C não está errada como observação, mas não responde a pergunta sobre impacto forense. A resposta que descreve corretamente o impacto real é a que considera o SIEM como fonte autoritativa de evidência — que é exatamente para o que ele existe.`,
+    checklist_item: 'Compreensão de anti-forense: limpeza local x SIEM centralizado e timestomping x $MFT',
+    points: 300,
+    penalty: 125,
+  },
+];
+
+
+// IDs corretos por fase, codificados por XOR para reduzir gabarito óbvio em leitura casual.
+const _CID = [
+  [0x20,0x36,0x79],
+  [0x3C,0x7A,0x25],
+  [0x38,0x77,0x3E],
+  [0x23,0x7C,0x3F],
+  [0x3D,0x76,0x2A],
+  [0x26,0x78,0x3A],
+  [0x3F,0x7D,0x34],
+  [0x2C,0x7B,0x39],
+].map(_dc);
+function _isCorrect(phaseIdx, optId) {
+  return _CID[phaseIdx] === optId;
+}
+
+const MITRE_MAP = {
+  'T1590': {id:'T1590', name:'Gather Victim Info'},
+  'T1589': {id:'T1589', name:'Gather Victim Identity'},
+  'T1078': {id:'T1078', name:'Valid Accounts'},
+  'T1110': {id:'T1110', name:'Brute Force'},
+  'T1190': {id:'T1190', name:'Exploit Public App'},
+  'T1059': {id:'T1059', name:'Command & Scripting'},
+  'T1046': {id:'T1046', name:'Network Service Scan'},
+  'T1003': {id:'T1003', name:'OS Credential Dump'},
+  'T1134': {id:'T1134', name:'Access Token Manip.'},
+  'T1087': {id:'T1087', name:'Account Discovery'},
+  'T1550': {id:'T1550', name:'Use Alt Auth Material'},
+  'T1047': {id:'T1047', name:'WMI'},
+  'T1021': {id:'T1021', name:'Remote Services'},
+  'T1053': {id:'T1053', name:'Scheduled Task'},
+  'T1505': {id:'T1505', name:'Server Software Comp.'},
+  'T1036': {id:'T1036', name:'Masquerading'},
+  'T1048': {id:'T1048', name:'Exfil Over Alt Protocol'},
+  'T1071': {id:'T1071', name:'App Layer Protocol'},
+  'T1567': {id:'T1567', name:'Exfil Over Web Service'},
+  'T1070': {id:'T1070', name:'Indicator Removal'},
+  'T1099': {id:'T1099', name:'Timestomp'},
+  'T1562': {id:'T1562', name:'Impair Defenses'},
+};
+
+// ═══════════════════════════════════════════════════
+// NAVEGAÇÃO DE TELAS
+// ═══════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function chooseRole(r) {
+  G.role = r;
+  showScreen('screen-difficulty');
+}
+
+function chooseDiff(d) {
+  G.diff = d;
+  const mults = {easy:0.7, medium:1, hard:1.5};
+  G.diffMult = mults[d];
+  showScreen('screen-name');
+}
+
+function startGame() {
+  const n = document.getElementById('player-name').value.trim();
+  if (!n) { alert('Por favor, insira seu nome.'); return; }
+  G.name = n;
+  G.phase = 0;
+  G.score = 0;
+  G.penalties = 0;
+  G.correct = 0;
+  G.cmdRan = {};
+  G.phaseAnswered = [];
+  setupGameUI();
+  showScreen('screen-story');
+  loadPhase(0);
+}
+
+// ═══════════════════════════════════════════════════
+// SETUP UI
+// ═══════════════════════════════════════════════════
+function setupGameUI() {
+  const isAtk = G.role === 'attacker';
+  document.getElementById('role-label').textContent = isAtk ? '// MODO ATACANTE' : '// MODO BLUE TEAM';
+  document.getElementById('role-label').style.color = isAtk ? 'var(--accent2)' : 'var(--accent)';
+  document.getElementById('terminal-label').textContent = isAtk ? 'nexalab@attack-vm:~$' : 'soc-analyst@nexasiem:~$';
+}
+
+// ═══════════════════════════════════════════════════
+// LOAD PHASE
+// ═══════════════════════════════════════════════════
+function loadPhase(idx) {
+  const ph = PHASES[idx];
+  G.answered = false;
+
+  // Kill chain
+  document.querySelectorAll('.kc-step').forEach((el,i) => {
+    el.className = 'kc-step';
+    if (i < idx) el.classList.add('done');
+    else if (i === idx) el.classList.add('active');
+  });
+
+  // Progress
+  const pct = Math.round(((idx + 1) / G.maxPhases) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('phase-badge').textContent = `FASE ${idx+1}/8`;
+  document.getElementById('phase-label-text').textContent = `Fase ${idx+1} de 8 — ${ph.phase_name}`;
+
+  // Score
+  document.getElementById('score-display').textContent = G.score;
+
+  // Terminal
+  const termOut = document.getElementById('terminal-output');
+  termOut.innerHTML = `<div class="t-line t-info">// ${ph.title}</div><div class="t-line" style="color:rgba(255,255,255,0.15)">─────────────────────────────────────</div>`;
+
+  // Command buttons
+  const cmds = document.getElementById('cmd-buttons');
+  cmds.innerHTML = '';
+  ph.terminal_cmds.forEach((cmd, i) => {
+    const key = `${idx}-${i}`;
+    const btn = document.createElement('button');
+    btn.className = 'cmd-btn' + (G.cmdRan[key] ? ' ran' : '');
+    btn.textContent = '$ ' + cmd.label;
+    btn.disabled = G.cmdRan[key] || false;
+    btn.onclick = () => runCmd(idx, i, key, btn);
+    cmds.appendChild(btn);
+  });
+
+  // SIEM
+  renderSIEM(ph);
+
+  // Question
+  renderQuestion(ph, idx);
+
+  // Next button
+  document.getElementById('btn-next').disabled = true;
+  document.getElementById('q-feedback').classList.remove('show','pos','neg');
+  document.getElementById('q-feedback').textContent = '';
+  document.getElementById('penalty-label').textContent = '';
+}
+
+// ═══════════════════════════════════════════════════
+// TERMINAL CMD
+// ═══════════════════════════════════════════════════
+function runCmd(phaseIdx, cmdIdx, key, btn) {
+  const ph = PHASES[phaseIdx];
+  const cmd = ph.terminal_cmds[cmdIdx];
+  const out = document.getElementById('terminal-output');
+
+  btn.disabled = true;
+  btn.classList.add('ran');
+  G.cmdRan[key] = true;
+
+  // Animate lines
+  let delay = 0;
+  cmd.output.forEach(line => {
+    setTimeout(() => {
+      const d = document.createElement('div');
+      d.className = 't-line';
+      if (line.t === 'prompt') {
+        d.innerHTML = `<span class="t-prompt">${line.v}</span>`;
+      } else {
+        d.classList.add('t-' + line.t);
+        d.textContent = line.v;
+      }
+      // merge prompt + cmd
+      if (line.t === 'prompt') {
+        const next = cmd.output[cmd.output.indexOf(line) + 1];
+        if (next && next.t === 'cmd') {
+          d.innerHTML = `<span class="t-prompt">${line.v}</span><span class="t-cmd">${next.v}</span>`;
+        }
+      }
+      if (line.t !== 'cmd') out.appendChild(d);
+      out.scrollTop = out.scrollHeight;
+    }, delay);
+    delay += 120;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// SIEM RENDER
+// ═══════════════════════════════════════════════════
+function renderSIEM(ph) {
+  // Alerts
+  const alertsEl = document.getElementById('siem-alerts');
+  alertsEl.innerHTML = '';
+  ph.siem_alerts.forEach(a => {
+    const div = document.createElement('div');
+    div.className = `alert-item ${a.sev}`;
+    div.innerHTML = `<span class="sev-badge sev-${a.sev}">${a.sev.toUpperCase()}</span><span style="color:var(--text2);font-size:0.7rem">[${a.ts}]</span><span style="flex:1">${a.text}</span>`;
+    alertsEl.appendChild(div);
+  });
+
+  // Logs
+  const logsEl = document.getElementById('siem-logs');
+  logsEl.innerHTML = '';
+  ph.siem_logs.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'log-line';
+    d.textContent = l;
+    logsEl.appendChild(d);
+  });
+
+  // Timeline
+  const tlEl = document.getElementById('siem-timeline');
+  tlEl.innerHTML = '<div style="font-family:var(--mono);font-size:0.75rem;color:var(--text2);margin-bottom:0.5rem">TIMELINE DE INCIDENTE (cumulativo)</div>';
+  // Collect all up to current phase
+  let allEvents = [];
+  for (let i = 0; i <= G.phase; i++) {
+    PHASES[i].timeline.forEach(e => allEvents.push(e));
+  }
+  allEvents.forEach(e => {
+    const d = document.createElement('div');
+    d.style.cssText = 'display:flex;gap:0.5rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);font-family:var(--mono);font-size:0.75rem;align-items:center';
+    const colors = {critical:'var(--red)',high:'var(--warn)',medium:'#7ec8a0',noise:'var(--text2)'};
+    d.innerHTML = `<span style="color:var(--accent);min-width:45px">${e.ts}</span><span style="width:10px;height:10px;border-radius:50%;background:${colors[e.sev]||'var(--text2)'};flex-shrink:0"></span><span style="color:var(--text)">${e.evt}</span>`;
+    tlEl.appendChild(d);
+  });
+
+  // MITRE
+  const mitreEl = document.getElementById('siem-mitre');
+  mitreEl.innerHTML = '<div style="font-size:0.75rem;color:var(--text2);margin-bottom:0.5rem;font-family:var(--mono)">MITRE ATT&CK — Técnicas Observadas</div><div class="mitre-grid" id="mitre-cells"></div>';
+  const cells = document.getElementById('mitre-cells');
+  // Collect all techniques
+  let allHits = new Set();
+  for (let i = 0; i <= G.phase; i++) {
+    PHASES[i].mitre_hits.forEach(h => allHits.add(h));
+  }
+  Object.keys(MITRE_MAP).forEach(k => {
+    const m = MITRE_MAP[k];
+    const d = document.createElement('div');
+    d.className = 'mitre-cell' + (allHits.has(k) ? ' hit' : '');
+    d.innerHTML = `<div class="mitre-id">${m.id}</div><div class="mitre-name">${m.name}</div>`;
+    cells.appendChild(d);
+  });
+
+  // Host
+  const hostEl = document.getElementById('siem-host');
+  hostEl.innerHTML = `<pre style="font-family:var(--mono);font-size:0.78rem;color:var(--text2);white-space:pre-wrap;line-height:1.6">${ph.host_info}</pre>`;
+}
+
+// ═══════════════════════════════════════════════════
+// QUESTION RENDER
+// ═══════════════════════════════════════════════════
+function renderQuestion(ph, idx) {
+  document.getElementById('q-context').innerHTML = ph.context;
+  document.getElementById('q-title').textContent = ph.question;
+
+  const optsEl = document.getElementById('q-options');
+  optsEl.innerHTML = '';
+
+  // Shuffle options
+  const opts = [...ph.options].sort(() => Math.random() - 0.5);
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'q-opt';
+    btn.textContent = opt.text;
+    btn.dataset.id = opt.id;
+    btn.onclick = () => selectOption(btn, opt.id, ph, idx);
+    optsEl.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// OPTION SELECT
+// ═══════════════════════════════════════════════════
+let selectedOpt = null;
+let confirmNeeded = false;
+
+function selectOption(btn, optId, ph, phaseIdx) {
+  if (G.answered) return;
+
+  // If diff is hard, require double click
+  if (G.diff === 'hard' && !confirmNeeded) {
+    document.querySelectorAll('.q-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedOpt = {btn, optId, ph, phaseIdx};
+    document.getElementById('penalty-label').textContent = '⚡ Modo Difícil: clique novamente para confirmar';
+    confirmNeeded = true;
+    return;
+  }
+
+  confirmNeeded = false;
+  document.getElementById('penalty-label').textContent = '';
+  G.answered = true;
+
+  // Mark all
+  document.querySelectorAll('.q-opt').forEach(b => {
+    b.classList.remove('selected');
+    if (_isCorrect(phaseIdx, b.dataset.id)) b.classList.add('correct');
+    else if (b.dataset.id === optId && !_isCorrect(phaseIdx, optId)) b.classList.add('wrong');
+  });
+
+  const correct = _isCorrect(phaseIdx, optId);
+  const fb = document.getElementById('q-feedback');
+  fb.classList.add('show');
+
+  if (correct) {
+    G.correct++;
+    const pts = Math.round(ph.points * G.diffMult);
+    G.score += pts;
+    fb.classList.add('pos');
+    fb.innerHTML = `✅ <strong>+${pts} pts</strong> — ${ph.feedback_pos}`;
+    G.checklist.push({item: ph.checklist_item, done: true});
+  } else {
+    const pen = Math.round(ph.penalty * G.diffMult);
+    G.score = Math.max(0, G.score - pen);
+    G.penalties += pen;
+    fb.classList.add('neg');
+    fb.innerHTML = `❌ <strong>-${pen} pts</strong> — ${ph.feedback_neg}`;
+    G.checklist.push({item: ph.checklist_item, done: false});
+  }
+
+  G.phaseAnswered[phaseIdx] = correct;
+  document.getElementById('score-display').textContent = G.score;
+  document.getElementById('btn-next').disabled = false;
+
+  // Screen flash for hard mode
+  if (!correct && G.diff === 'hard') {
+    document.body.classList.add('glitch');
+    setTimeout(() => document.body.classList.remove('glitch'), 400);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// NEXT PHASE
+// ═══════════════════════════════════════════════════
+function nextPhase() {
+  if (G.phase < G.maxPhases - 1) {
+    G.phase++;
+    loadPhase(G.phase);
+    window.scrollTo(0, document.getElementById('question-panel').offsetTop - 100);
+  } else {
+    endGame();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// TABS SIEM
+// ═══════════════════════════════════════════════════
+function switchTab(tab, el) {
+  document.querySelectorAll('.siem-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['alerts','logs','timeline','mitre','host'].forEach(t => {
+    document.getElementById('siem-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// EVIDENCES PANEL
+// ═══════════════════════════════════════════════════
+function showEvidences() {
+  switchTab('timeline', document.querySelectorAll('.siem-tab')[2]);
+}
+
+// ═══════════════════════════════════════════════════
+// END GAME
+// ═══════════════════════════════════════════════════
+function endGame() {
+  showScreen('screen-result');
+
+  const maxScore = PHASES.reduce((acc, ph) => acc + Math.round(ph.points * G.diffMult), 0);
+  const pct = Math.round((G.score / maxScore) * 100);
+
+  let grade, gradeColor, desc;
+  if (pct >= 85) {
+    grade = 'S'; gradeColor = 'var(--accent)';
+    desc = 'Elite. Você correlacionou evidências como alguém que já perdeu um fim de semana inteiro num incidente real — e sobreviveu pra contar.';
+  } else if (pct >= 70) {
+    grade = 'A'; gradeColor = 'var(--green)';
+    desc = 'Sólido. Algumas decisões precipitadas, mas você conteve o ataque antes que o CEO ficasse sabendo pelo LinkedIn.';
+  } else if (pct >= 50) {
+    grade = 'B'; gradeColor = 'var(--warn)';
+    desc = 'Razoável. O atacante saiu com alguns dados, mas pelo menos você documentou tudo direito pro relatório de "lições aprendidas".';
+  } else if (pct >= 30) {
+    grade = 'C'; gradeColor = '#ff8a50';
+    desc = 'Incidente contido parcialmente. O RH vai precisar de uma conversa. O atacante também — porque ele ficou sem dados de qualidade.';
+  } else {
+    grade = 'F'; gradeColor = 'var(--red)';
+    desc = 'O atacante mandou um cartão de agradecimento. Sério. Está na sua caixa de entrada — ou estava, antes do servidor cair.';
+  }
+
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-grade').style.color = gradeColor;
+  document.getElementById('result-title').textContent = `Operação Concluída — ${pct}%`;
+  document.getElementById('result-desc').textContent = desc;
+  document.getElementById('stat-score').textContent = G.score;
+  document.getElementById('stat-correct').textContent = `${G.correct}/8`;
+  document.getElementById('stat-penalty').textContent = `-${G.penalties}`;
+
+  // Incident report
+  const irEl = document.getElementById('incident-report');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR');
+  irEl.innerHTML = `
+<span class="ir-head">═══ RELATÓRIO DE INCIDENTE — NexaFoods S.A. ═══</span>
+<span class="ir-field">Analista:</span> ${G.name}
+<span class="ir-field">Modo:</span> ${G.role === 'attacker' ? 'Atacante' : 'Blue Team'} / Dificuldade: ${G.diff.toUpperCase()}
+<span class="ir-field">Data/hora conclusão:</span> ${dateStr}
+<span class="ir-field">Pontuação:</span> ${G.score} / ${maxScore} (${pct}%)
+<span class="ir-field">Acertos:</span> ${G.correct}/8 fases | Penalidades totais: -${G.penalties} pts
+
+<span class="ir-field">Vetor inicial:</span> Credential Stuffing via VPN (Pulse Secure 9.0 — FAKE-2026-0001)
+<span class="ir-field">Credencial comprometida:</span> ti.suporte@nexafoods.com (pasta pública 2024-08-11)
+<span class="ir-field">Sistemas afetados:</span> WEB01, SRV-FIN-02, LINUX-BI-01, DC01 (persistência)
+<span class="ir-field">Dados exfiltrados (simulado):</span> base_clientes.csv (18.2MB), DRE Q3 (4.8MB)
+<span class="ir-field">Técnicas MITRE:</span> T1590, T1078, T1110, T1190, T1003, T1550, T1053, T1048, T1070
+<span class="ir-field">Impacto regulatório:</span> Potencial notificação ANPD (LGPD — dados pessoais de clientes)
+
+<span class="ir-field">Recomendações principais:</span>
+1. Implementar MFA em todos os acessos VPN
+2. Revisar privilégios de contas de serviço (svc_backup)
+3. Instalar EDR em SRV-FIN-02 e demais servidores legados
+4. Configurar política de desbloqueio de conta > 30 minutos
+5. Revogar chaves SSH compartilhadas de deploy
+6. Ativar DLP com bloqueio automático para transferências grandes
+`;
+
+  // Checklist
+  const ckEl = document.getElementById('checklist-final');
+  ckEl.innerHTML = '<div style="font-family:var(--head);font-size:0.9rem;color:var(--accent);margin-bottom:0.75rem;margin-top:1rem">CHECKLIST DE INVESTIGAÇÃO</div>';
+  G.checklist.forEach(item => {
+    const d = document.createElement('div');
+    d.className = 'checklist-item ' + (item.done ? 'done' : 'miss');
+    d.innerHTML = `<span class="ck">${item.done ? '✅' : '❌'}</span>${item.item}`;
+    ckEl.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// CERTIFICATE
+// ═══════════════════════════════════════════════════
+function showCertificate() {
+  showScreen('screen-cert');
+  drawCertificate();
+}
+
+function drawCertificate() {
+  const canvas = document.getElementById('cert-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = 900, H = 620;
+  canvas.width = W;
+  canvas.height = H;
+
+  // Background
+  ctx.fillStyle = '#080c10';
+  ctx.fillRect(0, 0, W, H);
+
+  // Outer border
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(12, 12, W-24, H-24);
+  ctx.strokeStyle = 'rgba(0,229,255,0.3)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(20, 20, W-40, H-40);
+
+  // Corner decorations
+  const corners = [[20,20],[W-20,20],[20,H-20],[W-20,H-20]];
+  corners.forEach(([cx,cy]) => {
+    ctx.strokeStyle = '#ff3d6a';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const s = cx < W/2 ? 1 : -1;
+    const sy = cy < H/2 ? 1 : -1;
+    ctx.moveTo(cx, cy+sy*30);
+    ctx.lineTo(cx, cy);
+    ctx.lineTo(cx+s*30, cy);
+    ctx.stroke();
+  });
+
+  // Grid lines (subtle)
+  ctx.strokeStyle = 'rgba(0,229,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 40; x < W; x += 60) {
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  }
+  for (let y = 40; y < H; y += 60) {
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+
+  // Header
+  ctx.fillStyle = '#00e5ff';
+  ctx.font = 'bold 11px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('// CERTIFICADO DE CONCLUSÃO — SIMULAÇÃO DE INCIDENTE CORPORATIVO', W/2, 55);
+
+  // Divider
+  ctx.strokeStyle = 'rgba(0,229,255,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(60, 65); ctx.lineTo(W-60, 65); ctx.stroke();
+
+  // Title
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 36px monospace';
+  ctx.fillText('ATAQUE × DEFESA', W/2, 115);
+  ctx.fillStyle = '#ff3d6a';
+  ctx.font = 'bold 16px monospace';
+  ctx.fillText('OPERAÇÃO: EMPRESA FANTASMA', W/2, 140);
+
+  // Certify text
+  ctx.fillStyle = 'rgba(201,216,232,0.6)';
+  ctx.font = '14px monospace';
+  ctx.fillText('Certificamos que o operador', W/2, 185);
+
+  // Name
+  ctx.fillStyle = '#00e5ff';
+  ctx.font = 'bold 30px monospace';
+  ctx.fillText(G.name, W/2, 225);
+
+  // Line under name
+  const nameW = ctx.measureText(G.name).width;
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(W/2 - nameW/2 - 10, 233);
+  ctx.lineTo(W/2 + nameW/2 + 10, 233);
+  ctx.stroke();
+
+  // Completion text
+  ctx.fillStyle = 'rgba(201,216,232,0.6)';
+  ctx.font = '14px monospace';
+  ctx.fillText('concluiu com êxito o desafio educacional de cibersegurança', W/2, 260);
+
+  // Score
+  const maxScore = PHASES.reduce((acc, ph) => acc + Math.round(ph.points * G.diffMult), 0);
+  const pct = Math.round((G.score / maxScore) * 100);
+  ctx.fillStyle = '#39ff14';
+  ctx.font = 'bold 16px monospace';
+  ctx.fillText(`Pontuação: ${G.score} pts (${pct}%) | Acertos: ${G.correct}/8 | Dificuldade: ${G.diff.toUpperCase()}`, W/2, 290);
+
+  // Divider 2
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(60, 305); ctx.lineTo(W-60, 305); ctx.stroke();
+
+  // Workload
+  ctx.fillStyle = '#ffb300';
+  ctx.font = 'bold 13px monospace';
+  ctx.fillText('CARGA HORÁRIA: 12 HORAS', W/2, 328);
+
+  // Competencies
+  ctx.fillStyle = 'rgba(201,216,232,0.7)';
+  ctx.font = '11px monospace';
+  const comps = [
+    'Análise de Logs  |  Correlação SIEM  |  Resposta a Incidente  |  Kill Chain Analysis',
+    'MITRE ATT&CK  |  Triagem de Alertas  |  Contenção  |  Investigação Forense Digital',
+  ];
+  comps.forEach((c, i) => ctx.fillText(c, W/2, 352 + i * 20));
+
+  // Divider 3
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(60, 400); ctx.lineTo(W-60, 400); ctx.stroke();
+
+  // Bottom info
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('pt-BR', {year:'numeric',month:'long',day:'numeric'});
+
+  // Instrutora (left)
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#00e5ff';
+  ctx.font = 'bold 14px monospace';
+  ctx.fillText('Mariana BS', 100, 440);
+  ctx.fillStyle = 'rgba(201,216,232,0.5)';
+  ctx.font = '11px monospace';
+  ctx.fillText('Instrutora Responsável', 100, 460);
+  ctx.strokeStyle = 'rgba(201,216,232,0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(70, 448); ctx.lineTo(240, 448); ctx.stroke();
+
+  // Date (center)
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(201,216,232,0.7)';
+  ctx.font = '12px monospace';
+  ctx.fillText(dateStr, W/2, 445);
+
+  // Hash (right)
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(0,229,255,0.6)';
+  ctx.font = '10px monospace';
+  // Generate cert hash
+  const hashInput = G.name + G.score + dateStr + G.diff;
+  let hash = 0;
+  for (let i = 0; i < hashInput.length; i++) {
+    hash = ((hash << 5) - hash) + hashInput.charCodeAt(i);
+    hash |= 0;
+  }
+  const certHash = Math.abs(hash).toString(16).toUpperCase().padStart(8,'0');
+  const fullHash = `NF-${certHash}-${G.score}-${G.correct}8`;
+  ctx.fillText('CERT ID: ' + fullHash, W-80, 440);
+  ctx.fillStyle = 'rgba(201,216,232,0.3)';
+  ctx.font = '10px monospace';
+  ctx.fillText('Verificação: ops.nexafoods.sim/cert', W-80, 458);
+
+  // Bottom bar
+  ctx.fillStyle = 'rgba(0,229,255,0.05)';
+  ctx.fillRect(0, H-50, W, 50);
+  ctx.strokeStyle = 'rgba(0,229,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, H-50); ctx.lineTo(W, H-50); ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(201,216,232,0.3)';
+  ctx.font = '10px monospace';
+  ctx.fillText('Este certificado é parte de simulação educacional de cibersegurança. Nenhum sistema real foi comprometido durante a emissão deste documento.', W/2, H-25);
+}
+
+function downloadCert() {
+  const canvas = document.getElementById('cert-canvas');
+  const link = document.createElement('a');
+  link.download = `certificado_nexafoods_${(G.name || 'operador').replace(/\s+/g,'_')}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// ═══════════════════════════════════════════════════
+// ANTI-INSPECT (ofuscação leve)
+// ═══════════════════════════════════════════════════
+(function() {
+  // Aviso não bloqueante para inspeção; não há segurança real em HTML estático.
+  const _shield = _dc([0x21^_K, 0x53^_K, 0x49^_K, 0x4D^_K]);  // "!SIM"
+  if (typeof _shield !== 'string') return;
+  
+  // Devtools detection (light)
+  let dt = false;
+  const threshold = 160;
+  setInterval(() => {
+    if (window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold) {
+      if (!dt) {
+        dt = true;
+        // Just a warning, non-blocking
+        console.warn('%c[NexaSOC] Ferramentas de desenvolvedor detectadas. Os gabaritos estão ofuscados. Mas boa tentativa — curiosidade é o primeiro passo pra ser um bom analista.', 'color:#00e5ff;font-family:monospace;font-size:13px');
+      }
+    }
+  }, 1000);
+
+  console.log('%cATAQUE × DEFESA: Operação Empresa Fantasma', 'color:#ff3d6a;font-size:20px;font-weight:bold;font-family:monospace');
+  console.log('%cValidação educacional com ofuscação leve. Em HTML estático, nada é inviolável — o objetivo é treino, não DRM.', 'color:#00e5ff;font-family:monospace');
+  console.log('%cSe você chegou até aqui, provavelmente já sabe a resposta. Jogue pelo aprendizado.', 'color:#6a8fa8;font-family:monospace');
+})();
+
+// ─── INIT ───
+document.getElementById('player-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startGame();
+});
+</script>
+</body>
+</html>
